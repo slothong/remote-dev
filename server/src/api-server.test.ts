@@ -1,18 +1,26 @@
 import {describe, it, expect, beforeAll, afterAll} from 'vitest';
 import {createAPIServer} from './api-server';
+import {WebSocketBridge} from './websocket-server';
 import type {Server} from 'http';
 
 describe('API Server SSH Connection', () => {
   let server: Server;
+  let wsServer: WebSocketBridge;
   const port = 3100;
+  const wsPort = 3101;
 
   beforeAll(async () => {
-    server = await createAPIServer(port);
+    wsServer = new WebSocketBridge(wsPort);
+    await wsServer.start();
+    server = await createAPIServer(port, wsServer);
   });
 
   afterAll(async () => {
     if (server) {
       await new Promise(resolve => server.close(resolve));
+    }
+    if (wsServer) {
+      await wsServer.close();
     }
   });
 
