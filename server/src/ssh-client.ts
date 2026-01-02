@@ -29,6 +29,7 @@ export async function connectToSSH(
     });
 
     client.on('error', err => {
+      console.log('##### error');
       resolve({
         success: false,
         error: err.message,
