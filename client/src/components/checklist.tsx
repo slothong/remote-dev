@@ -120,13 +120,14 @@ export function Checklist({sessionId}: ChecklistProps) {
     }
   };
 
-  const handleGoClick = (itemText: string) => {
+  const handleGoClick = (sectionIndex: number, itemIndex: number) => {
     if (!ws || ws.readyState !== WebSocket.OPEN) {
       setError('WebSocket not connected');
       return;
     }
 
-    const command = `claude /go ${itemText}\n`;
+    // 섹션 번호와 항목 번호는 1부터 시작 (인덱스는 0부터 시작하므로 +1)
+    const command = `claude /go ${sectionIndex + 1}.${itemIndex + 1}\n`;
     ws.send(command);
   };
 
@@ -343,7 +344,7 @@ export function Checklist({sessionId}: ChecklistProps) {
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       className="go-button p-2 text-xs font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg shadow-sm hover:shadow transition-all"
-                      onClick={() => handleGoClick(item.text)}
+                      onClick={() => handleGoClick(sectionIndex, itemIndex)}
                       title="Execute this task"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

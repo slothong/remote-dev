@@ -264,3 +264,76 @@ describe('각 섹션에 항목 추가 폼을 표시한다', () => {
     });
   });
 });
+
+describe('Go 버튼 클릭 시 올바른 형식의 명령어를 보낸다', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+  });
+
+  it('should send /go command with section and item index (e.g., /go 1.2)', async () => {
+    const mockPlanData = {
+      success: true,
+      data: {
+        sections: [
+          {
+            title: 'Section 1',
+            items: [
+              {text: 'Task 1.1', checked: false},
+              {text: 'Task 1.2', checked: false},
+            ],
+          },
+          {
+            title: 'Section 2',
+            items: [{text: 'Task 2.1', checked: false}],
+          },
+        ],
+      },
+    };
+
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      json: async () => mockPlanData,
+    });
+
+    // Mock WebSocket
+    const mockSend = vi.fn();
+    const MockWebSocketClass = vi.fn(function (this: WebSocket) {
+      this.readyState = WebSocket.OPEN;
+      this.send = mockSend;
+      this.close = vi.fn();
+      this.onopen = null;
+      this.onerror = null;
+      this.onclose = null;
+      this.onmessage = null;
+      // Trigger onopen immediately
+      setTimeout(() => {
+        if (this.onopen) this.onopen(new Event('open'));
+      }, 0);
+      return this;
+    }) as unknown as typeof WebSocket;
+
+    vi.stubGlobal('WebSocket', MockWebSocketClass);
+
+    render(<Checklist sessionId="test-session" />);
+
+    await waitFor(() => {
+      const goButtons = screen.queryAllByTitle('Execute this task');
+      expect(goButtons.length).toBeGreaterThan(0);
+    });
+
+    // Click Go button on first item of first section (should send "/go 1.1")
+    const goButtons = screen.getAllByTitle('Execute this task');
+    goButtons[0].click();
+
+    expect(mockSend).toHaveBeenCalledWith('claude /go 1.1\n');
+
+    // Click Go button on second item of first section (should send "/go 1.2")
+    goButtons[1].click();
+
+    expect(mockSend).toHaveBeenCalledWith('claude /go 1.2\n');
+
+    // Click Go button on first item of second section (should send "/go 2.1")
+    goButtons[2].click();
+
+    expect(mockSend).toHaveBeenCalledWith('claude /go 2.1\n');
+  });
+});
