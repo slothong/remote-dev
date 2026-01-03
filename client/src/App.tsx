@@ -2,6 +2,7 @@ import {useState} from 'react';
 import './App.css';
 import {SSHConnectionForm} from './components/ssh-connection-form';
 import {Terminal} from './components/terminal';
+import {Checklist} from './components/checklist';
 import {connectToSSH} from './services/ssh-service';
 
 function App() {
@@ -40,7 +41,21 @@ function App() {
           <h1>Connected to SSH</h1>
           <p>Session ID: {sessionId}</p>
         </div>
-        <Terminal sessionId={sessionId || undefined} />
+        <div style={{display: 'flex', flex: 1, overflow: 'hidden'}}>
+          <div
+            style={{
+              width: '400px',
+              padding: '20px',
+              borderRight: '1px solid #ccc',
+              overflowY: 'auto',
+            }}
+          >
+            <Checklist sessionId={sessionId || undefined} />
+          </div>
+          <div style={{flex: 1}}>
+            <Terminal sessionId={sessionId || undefined} />
+          </div>
+        </div>
       </div>
     );
   }
