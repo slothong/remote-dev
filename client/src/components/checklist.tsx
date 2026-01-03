@@ -127,7 +127,7 @@ export function Checklist({sessionId}: ChecklistProps) {
     }
 
     // 섹션 번호와 항목 번호는 1부터 시작 (인덱스는 0부터 시작하므로 +1)
-    const command = `claude /go ${sectionIndex + 1}.${itemIndex + 1}\n`;
+    const command = `/go ${sectionIndex + 1}.${itemIndex + 1}\n`;
     ws.send(command);
   };
 
