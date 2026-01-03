@@ -16,6 +16,8 @@ export class MockSSHServer {
   private password: string;
   private hostKeyPath: string;
   private isListening: boolean = false;
+  private fileStorage: Map<string, Buffer> = new Map();
+  private activeConnections: Set<any> = new Set();
 
   constructor(config: MockSSHServerConfig = {}) {
     this.port = config.port || 2222;
@@ -29,6 +31,7 @@ export class MockSSHServer {
         hostKeys: [readFileSync(this.hostKeyPath)],
       },
       client => {
+        this.activeConnections.add(client);
         console.log('SSH Client connected');
 
         client.on('authentication', ctx => {
@@ -55,7 +58,13 @@ export class MockSSHServer {
           client.on('session', accept => {
             const session = accept();
 
-            session.on('shell', (accept, reject) => {
+            // Handle PTY requests
+            session.on('pty', (accept, _reject, _info) => {
+              console.log('PTY requested');
+              accept();
+            });
+
+            session.on('shell', (accept, _reject) => {
               console.log('Shell session requested');
               const stream = accept();
 
@@ -98,30 +107,34 @@ export class MockSSHServer {
               });
             });
 
-            session.on('sftp', (accept, reject) => {
+            session.on('sftp', (accept, _reject) => {
               console.log('SFTP session requested');
               const sftp = accept();
 
               // SFTP 파일 작업 시뮬레이션
-              // 테스트용 plan.md 파일 읽기
-              let testPlanContent: string;
-              try {
-                testPlanContent = readFileSync(
-                  join(__dirname, 'test_plan.md'),
-                  'utf-8',
-                );
-              } catch (error) {
-                // Fallback to default content
-                testPlanContent = `# Test Plan
+              // 파일 스토리지 초기화 (첫 세션에서만)
+              const planMdPath = 'remote-dev-workspace/plan.md';
+              if (!this.fileStorage.has(planMdPath)) {
+                let testPlanContent: string;
+                try {
+                  testPlanContent = readFileSync(
+                    join(__dirname, 'test_plan.md'),
+                    'utf-8',
+                  );
+                } catch (error) {
+                  // Fallback to default content
+                  testPlanContent = `# Test Plan
 
 ## Test Section
 - [ ] Test task 1
 - [x] Test task 2
 - [ ] Test task 3
 `;
+                }
+                this.fileStorage.set(planMdPath, Buffer.from(testPlanContent));
               }
 
-              sftp.on('OPEN', (reqid, filename, flags, attrs) => {
+              sftp.on('OPEN', (reqid, filename, _flags, _attrs) => {
                 console.log(`SFTP OPEN: ${filename}`);
                 // 파일 핸들 반환 (간단히 Buffer 사용)
                 const handle = Buffer.from(filename);
@@ -133,13 +146,17 @@ export class MockSSHServer {
                 const filename = handle.toString();
 
                 if (filename.includes('plan.md')) {
-                  const data = Buffer.from(testPlanContent);
-                  const chunk = data.slice(offset, offset + length);
+                  const fileData = this.fileStorage.get(planMdPath);
+                  if (fileData) {
+                    const chunk = fileData.slice(offset, offset + length);
 
-                  if (chunk.length > 0) {
-                    sftp.data(reqid, chunk);
+                    if (chunk.length > 0) {
+                      sftp.data(reqid, chunk);
+                    } else {
+                      sftp.status(reqid, 1); // EOF
+                    }
                   } else {
-                    sftp.status(reqid, 1); // EOF
+                    sftp.status(reqid, 2); // No such file
                   }
                 } else {
                   sftp.status(reqid, 2); // No such file
@@ -148,11 +165,38 @@ export class MockSSHServer {
 
               sftp.on('WRITE', (reqid, handle, offset, data) => {
                 console.log('SFTP WRITE');
-                // 쓰기 성공 시뮬레이션
-                sftp.status(reqid, 0); // Success
+                const filename = handle.toString();
+
+                if (filename.includes('plan.md')) {
+                  const currentData =
+                    this.fileStorage.get(planMdPath) || Buffer.alloc(0);
+
+                  // 파일 크기 조정 (필요한 경우)
+                  const newSize = Math.max(
+                    currentData.length,
+                    offset + data.length,
+                  );
+                  const newData = Buffer.alloc(newSize);
+
+                  // 기존 데이터 복사
+                  currentData.copy(newData, 0);
+
+                  // 새 데이터 쓰기
+                  data.copy(newData, offset);
+
+                  // 파일 스토리지 업데이트
+                  this.fileStorage.set(planMdPath, newData);
+
+                  console.log(
+                    `SFTP WRITE: Updated file, new size: ${newData.length}`,
+                  );
+                  sftp.status(reqid, 0); // Success
+                } else {
+                  sftp.status(reqid, 2); // No such file
+                }
               });
 
-              sftp.on('CLOSE', (reqid, handle) => {
+              sftp.on('CLOSE', (reqid, _handle) => {
                 console.log('SFTP CLOSE');
                 sftp.status(reqid, 0); // Success
               });
@@ -160,9 +204,12 @@ export class MockSSHServer {
               sftp.on('STAT', (reqid, path) => {
                 console.log(`SFTP STAT: ${path}`);
                 if (path.includes('plan.md')) {
+                  const fileData = this.fileStorage.get(planMdPath);
+                  const fileSize = fileData ? fileData.length : 0;
+
                   sftp.attrs(reqid, {
                     mode: 0o100644,
-                    size: testPlanContent.length,
+                    size: fileSize,
                     uid: 1000,
                     gid: 1000,
                     atime: Date.now() / 1000,
@@ -176,17 +223,18 @@ export class MockSSHServer {
           });
         });
 
-        client.on('error', err => {
+        client.on('error', (err: Error) => {
           console.error('SSH Client error:', err);
         });
 
         client.on('end', () => {
+          this.activeConnections.delete(client);
           console.log('SSH Client disconnected');
         });
       },
     );
 
-    this.server.on('error', err => {
+    this.server.on('error', (err: Error) => {
       console.error('SSH Server error:', err);
     });
   }
@@ -199,7 +247,7 @@ export class MockSSHServer {
         resolve();
       });
 
-      this.server.on('error', err => {
+      this.server.on('error', (err: Error) => {
         reject(err);
       });
     });
@@ -208,7 +256,25 @@ export class MockSSHServer {
   async stop(): Promise<void> {
     return new Promise(resolve => {
       if (this.isListening) {
+        // 모든 활성 연결 강제 종료
+        for (const client of this.activeConnections) {
+          try {
+            client.end();
+          } catch (e) {
+            // Ignore errors when closing connections
+          }
+        }
+        this.activeConnections.clear();
+
+        // 타임아웃 설정 (3초)
+        const timeout = setTimeout(() => {
+          console.log('Mock SSH server stopped (timeout)');
+          this.isListening = false;
+          resolve();
+        }, 3000);
+
         this.server.close(() => {
+          clearTimeout(timeout);
           this.isListening = false;
           console.log('Mock SSH server stopped');
           resolve();
