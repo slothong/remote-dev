@@ -94,7 +94,7 @@ export function Terminal({sessionId}: TerminalProps) {
     <div
       data-testid="terminal-container"
       className="terminal-container"
-      style={{position: 'fixed', bottom: '0', width: '100%', height: '300px'}}
+      style={{width: '100%', height: '300px'}}
     >
       <div ref={terminalRef} style={{width: '100%', height: '100%'}} />
     </div>
