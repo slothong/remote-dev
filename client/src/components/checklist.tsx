@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import {getWebSocket} from '../services/websocket-manager';
 
 interface PlanItem {
   text: string;
@@ -22,7 +23,6 @@ export function Checklist({sessionId}: ChecklistProps) {
   const [plan, setPlan] = useState<ParsedPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [ws, setWs] = useState<WebSocket | null>(null);
   const [newItemTexts, setNewItemTexts] = useState<Record<string, string>>({});
 
   const fetchPlan = async () => {
@@ -120,15 +120,22 @@ export function Checklist({sessionId}: ChecklistProps) {
     }
   };
 
-  const handleGoClick = (sectionIndex: number, itemIndex: number) => {
+  const handleGoClick = async (sectionIndex: number, itemIndex: number) => {
+    const ws = getWebSocket();
+
     if (!ws || ws.readyState !== WebSocket.OPEN) {
       setError('WebSocket not connected');
       return;
     }
 
     // 섹션 번호와 항목 번호는 1부터 시작 (인덱스는 0부터 시작하므로 +1)
-    const command = `/go ${sectionIndex + 1}.${itemIndex + 1}\n`;
-    ws.send(command);
+    const commandText = `/go ${sectionIndex + 1}.${itemIndex + 1}`;
+
+    ws.send(commandText);
+    // 엔터를 인식하게 하기 위해 지연과 함께 전송
+    await new Promise(resolve => setTimeout(resolve, 10));
+    // 마지막에 Enter (carriage return) 전송
+    ws.send('\r');
   };
 
   const handleDeleteClick = async (sectionTitle: string, itemIndex: number) => {
@@ -230,31 +237,6 @@ export function Checklist({sessionId}: ChecklistProps) {
     void fetchPlan();
   }, [sessionId]);
 
-  useEffect(() => {
-    if (!sessionId) return;
-
-    const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3001';
-    const websocket = new WebSocket(wsUrl);
-
-    websocket.onopen = () => {
-      setWs(websocket);
-    };
-
-    websocket.onerror = () => {
-      setError('WebSocket connection error');
-    };
-
-    websocket.onclose = () => {
-      setWs(null);
-    };
-
-    return () => {
-      if (websocket.readyState === WebSocket.OPEN) {
-        websocket.close();
-      }
-    };
-  }, [sessionId]);
-
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -270,8 +252,16 @@ export function Checklist({sessionId}: ChecklistProps) {
     return (
       <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
         <div className="flex items-start gap-3">
-          <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          <svg
+            className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
           </svg>
           <div>
             <h3 className="text-sm font-medium text-red-800">Error</h3>
@@ -286,8 +276,18 @@ export function Checklist({sessionId}: ChecklistProps) {
     return (
       <div className="p-8 text-center">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <svg
+            className="w-8 h-8 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
           </svg>
         </div>
         <p className="text-gray-500">No plan data available</p>
@@ -299,8 +299,18 @@ export function Checklist({sessionId}: ChecklistProps) {
     <div className="space-y-6" data-testid="checklist-container">
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+          <svg
+            className="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+            />
           </svg>
         </div>
         <div>
@@ -338,17 +348,31 @@ export function Checklist({sessionId}: ChecklistProps) {
                     }}
                     className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer mt-0.5"
                   />
-                  <span className={`flex-1 text-sm leading-relaxed ${item.checked ? 'checked line-through text-gray-400' : 'text-gray-700 font-medium'}`}>
+                  <span
+                    className={`flex-1 text-sm leading-relaxed ${item.checked ? 'checked line-through text-gray-400' : 'text-gray-700 font-medium'}`}
+                  >
                     {item.text}
                   </span>
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       className="go-button p-2 text-xs font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-lg shadow-sm hover:shadow transition-all"
-                      onClick={() => handleGoClick(sectionIndex, itemIndex)}
+                      onClick={() =>
+                        void handleGoClick(sectionIndex, itemIndex)
+                      }
                       title="Execute this task"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"
+                        />
                       </svg>
                     </button>
                     <button
@@ -358,8 +382,18 @@ export function Checklist({sessionId}: ChecklistProps) {
                       }}
                       title="Delete this task"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -390,8 +424,18 @@ export function Checklist({sessionId}: ChecklistProps) {
               onClick={() => void handleAddItem(section.title)}
               className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm hover:shadow transition-all duration-200"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
               </svg>
             </button>
           </div>
