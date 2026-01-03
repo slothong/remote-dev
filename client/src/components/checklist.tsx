@@ -58,7 +58,28 @@ export function Checklist({sessionId}: ChecklistProps) {
     itemIndex: number,
     currentChecked: boolean,
   ) => {
-    if (!sessionId) return;
+    if (!sessionId || !plan) return;
+
+    // Optimistic update: 즉시 로컬 상태 업데이트
+    const newChecked = !currentChecked;
+    setPlan(prevPlan => {
+      if (!prevPlan) return prevPlan;
+
+      return {
+        ...prevPlan,
+        sections: prevPlan.sections.map(section => {
+          if (section.title !== sectionTitle) return section;
+
+          return {
+            ...section,
+            items: section.items.map((item, idx) => {
+              if (idx !== itemIndex) return item;
+              return {...item, checked: newChecked};
+            }),
+          };
+        }),
+      };
+    });
 
     try {
       const response = await fetch(
@@ -70,7 +91,7 @@ export function Checklist({sessionId}: ChecklistProps) {
             sessionId,
             sectionTitle,
             itemIndex,
-            checked: !currentChecked,
+            checked: newChecked,
           }),
         },
       );
@@ -81,12 +102,18 @@ export function Checklist({sessionId}: ChecklistProps) {
       };
 
       if (data.success) {
-        // Refresh plan data
-        await fetchPlan();
+        // Sync with server after a brief delay to ensure persistence
+        setTimeout(async () => {
+          await fetchPlan();
+        }, 100);
       } else {
+        // Revert on error
+        await fetchPlan();
         setError(data.error || 'Failed to update check status');
       }
     } catch (err) {
+      // Revert on error
+      await fetchPlan();
       setError(
         err instanceof Error ? err.message : 'Failed to update check status',
       );
@@ -137,10 +164,30 @@ export function Checklist({sessionId}: ChecklistProps) {
   };
 
   const handleAddItem = async (sectionTitle: string) => {
-    if (!sessionId) return;
+    if (!sessionId || !plan) return;
 
     const itemText = newItemTexts[sectionTitle]?.trim();
     if (!itemText) return;
+
+    // Optimistic update: 즉시 로컬 상태에 항목 추가
+    setPlan(prevPlan => {
+      if (!prevPlan) return prevPlan;
+
+      return {
+        ...prevPlan,
+        sections: prevPlan.sections.map(section => {
+          if (section.title !== sectionTitle) return section;
+
+          return {
+            ...section,
+            items: [...section.items, {text: itemText, checked: false}],
+          };
+        }),
+      };
+    });
+
+    // Clear input immediately
+    setNewItemTexts(prev => ({...prev, [sectionTitle]: ''}));
 
     try {
       const response = await fetch(
@@ -162,13 +209,18 @@ export function Checklist({sessionId}: ChecklistProps) {
       };
 
       if (data.success) {
-        // Clear input and refresh plan data
-        setNewItemTexts(prev => ({...prev, [sectionTitle]: ''}));
-        await fetchPlan();
+        // Sync with server after a brief delay to ensure persistence
+        setTimeout(async () => {
+          await fetchPlan();
+        }, 100);
       } else {
+        // Revert on error
+        await fetchPlan();
         setError(data.error || 'Failed to add item');
       }
     } catch (err) {
+      // Revert on error
+      await fetchPlan();
       setError(err instanceof Error ? err.message : 'Failed to add item');
     }
   };
@@ -218,11 +270,17 @@ export function Checklist({sessionId}: ChecklistProps) {
     <div className="checklist-container" data-testid="checklist-container">
       <h2>Plan Checklist</h2>
       {plan.sections.map((section, sectionIndex) => (
-        <div key={sectionIndex} className="checklist-section">
+        <div
+          key={`section-${sectionIndex}-${section.title}`}
+          className="checklist-section"
+        >
           <h3>{section.title}</h3>
           <ul className="checklist-items">
             {section.items.map((item, itemIndex) => (
-              <li key={itemIndex} className="checklist-item">
+              <li
+                key={`item-${sectionIndex}-${itemIndex}-${item.text}`}
+                className="checklist-item"
+              >
                 <input
                   type="checkbox"
                   checked={item.checked}
