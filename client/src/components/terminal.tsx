@@ -2,6 +2,7 @@ import {useEffect, useRef} from 'react';
 import {Terminal as XTerm} from '@xterm/xterm';
 import {FitAddon} from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
+import {initWebSocket, closeWebSocket} from '../services/websocket-manager';
 
 interface TerminalProps {
   sessionId?: string;
@@ -11,7 +12,6 @@ export function Terminal({sessionId}: TerminalProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const xtermRef = useRef<XTerm | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (!terminalRef.current) return;
@@ -35,7 +35,7 @@ export function Terminal({sessionId}: TerminalProps) {
     // Connect to WebSocket if sessionId is provided
     if (sessionId) {
       const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3001';
-      const ws = new WebSocket(wsUrl);
+      const ws = initWebSocket(wsUrl);
 
       ws.onopen = () => {
         term.writeln('Connected to server');
@@ -90,15 +90,11 @@ export function Terminal({sessionId}: TerminalProps) {
           ws.send(data);
         }
       });
-
-      wsRef.current = ws;
     }
 
     // Cleanup
     return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
+      closeWebSocket();
       term.dispose();
     };
   }, [sessionId]);
