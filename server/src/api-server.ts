@@ -5,6 +5,7 @@ import {SSHSessionManager} from './ssh-session';
 import {SSHWebSocketBridge} from './ssh-websocket-bridge';
 import type {WebSocketBridge} from './websocket-server';
 import type {SSHConfig} from './ssh-config';
+import {readPlanFile, parsePlan} from './plan-parser';
 
 const sshManager = new SSHSessionManager();
 let sshWsBridge: SSHWebSocketBridge | null = null;
@@ -81,6 +82,23 @@ export function createAPIServer(
       res.status(500).json({
         success: false,
         error: error instanceof Error ? error.message : 'Failed to start shell',
+      });
+    }
+  });
+
+  app.get('/api/plan', async (req: Request, res: Response) => {
+    try {
+      const content = await readPlanFile();
+      const parsed = parsePlan(content);
+
+      res.json({
+        success: true,
+        data: parsed,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to read plan',
       });
     }
   });
