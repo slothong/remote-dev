@@ -1,5 +1,6 @@
 import express, {type Request, type Response} from 'express';
 import cors from 'cors';
+import path from 'path';
 import type {Server} from 'http';
 import {SSHSessionManager} from './ssh-session';
 import {SSHWebSocketBridge} from './ssh-websocket-bridge';
@@ -23,7 +24,11 @@ export function createAPIServer(
 ): Promise<Server> {
   const app = express();
 
-  app.use(cors());
+  // CORS는 개발 모드에서만 활성화
+  if (process.env.NODE_ENV !== 'production') {
+    app.use(cors());
+  }
+
   app.use(express.json());
 
   sshWsBridge = new SSHWebSocketBridge(sshManager, wsServer);
@@ -339,6 +344,19 @@ export function createAPIServer(
       });
     }
   });
+
+  // 프로덕션 모드에서 클라이언트 정적 파일 서빙
+  if (process.env.NODE_ENV === 'production') {
+    // client/dist 폴더의 정적 파일 제공
+    // process.cwd()는 프로젝트 루트, build/src에서 실행되므로 상대 경로로 찾기
+    const clientDistPath = path.resolve(process.cwd(), 'client/dist');
+    app.use(express.static(clientDistPath));
+
+    // SPA fallback: 모든 non-API 요청을 index.html로 리다이렉트
+    app.get('*', (req: Request, res: Response) => {
+      res.sendFile(path.join(clientDistPath, 'index.html'));
+    });
+  }
 
   return new Promise(resolve => {
     const server = app.listen(port, () => {
