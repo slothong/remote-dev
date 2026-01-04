@@ -5,7 +5,8 @@ import * as websocketManager from '../services/websocket-manager';
 import {server} from '../mocks/server';
 import {http, HttpResponse} from 'msw';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 describe('체크리스트 컴포넌트를 렌더링할 수 있다', () => {
   it('체크리스트 컨테이너를 렌더링한다', async () => {
@@ -96,7 +97,7 @@ describe('체크박스 상태를 시각적으로 표시한다', () => {
     render(<Checklist sessionId="test-session" />);
 
     await waitFor(() => {
-      const checkboxes = screen.getAllByRole('checkbox');
+      const checkboxes = screen.getAllByRole<HTMLInputElement>('checkbox');
       expect(checkboxes[0].checked).toBe(false);
       expect(checkboxes[1].checked).toBe(true);
     });
@@ -245,7 +246,7 @@ describe('체크박스는 사용자가 클릭해서 상태 변경할 수 없다'
     render(<Checklist sessionId="test-session" />);
 
     await waitFor(() => {
-      const checkboxes = screen.getAllByRole('checkbox');
+      const checkboxes = screen.getAllByRole<HTMLInputElement>('checkbox');
       expect(checkboxes[0].disabled).toBe(true);
       expect(checkboxes[1].disabled).toBe(true);
     });
