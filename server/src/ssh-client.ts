@@ -44,6 +44,7 @@ export async function connectToSSH(
 
     if (config.password) {
       connectionConfig.password = config.password;
+      connectionConfig.tryKeyboard = true;
     }
 
     if (config.privateKey) {
