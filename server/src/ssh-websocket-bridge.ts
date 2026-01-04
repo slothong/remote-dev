@@ -49,8 +49,9 @@ export class SSHWebSocketBridge {
     this.shellStream = shellResult.stream;
 
     // Bridge SSH shell output to WebSocket
+    // Send raw buffer to preserve terminal control sequences
     this.shellStream.on('data', (data: Buffer) => {
-      this.wsServer.send(data.toString());
+      this.wsServer.send(data.toString('utf8'));
     });
 
     this.shellStream.on('close', () => {

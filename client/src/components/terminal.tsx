@@ -23,9 +23,13 @@ export function Terminal({sessionId}: TerminalProps) {
       fontSize: 14,
       fontFamily: 'monospace',
       allowTransparency: false,
-      convertEol: true,
+      // convertEol should be false to properly handle \r (carriage return)
+      // This allows terminal to overwrite lines instead of creating new ones
+      convertEol: false,
       rendererType: 'canvas',
       allowProposedApi: true,
+      scrollback: 1000,
+      windowsMode: false,
     });
 
     const fitAddon = new FitAddon();
