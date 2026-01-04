@@ -4,6 +4,7 @@ import {readRemoteFile, writeRemoteFile} from './ssh-file-operations';
 export interface PlanItem {
   text: string;
   checked: boolean;
+  inProgress: boolean;
 }
 
 export interface PlanSection {
@@ -57,12 +58,14 @@ export function parsePlan(content: string): ParsedPlan {
       continue;
     }
 
-    // Match checkbox items (- [x] or - [ ])
-    const itemMatch = line.match(/^-\s+\[([ x])\]\s+(.+)$/);
+    // Match checkbox items (- [x] or - [ ] or - [-])
+    const itemMatch = line.match(/^-\s+\[([ x-])\]\s+(.+)$/);
     if (itemMatch && currentSection) {
-      const checked = itemMatch[1] === 'x';
+      const status = itemMatch[1];
+      const checked = status === 'x';
+      const inProgress = status === '-';
       const text = itemMatch[2];
-      currentSection.items.push({text, checked});
+      currentSection.items.push({text, checked, inProgress});
     }
   }
 
@@ -96,7 +99,7 @@ export function updateCheckStatus(
     }
 
     // Match checkbox items
-    const itemMatch = line.match(/^-\s+\[([ x])\]\s+(.+)$/);
+    const itemMatch = line.match(/^-\s+\[([ x-])\]\s+(.+)$/);
     if (itemMatch && currentSection === sectionTitle) {
       if (currentItemIndex === itemIndex) {
         const checkMark = checked ? 'x' : ' ';
@@ -169,7 +172,7 @@ export function deletePlanItem(
     }
 
     // Match checkbox items
-    const itemMatch = line.match(/^-\s+\[([ x])\]\s+(.+)$/);
+    const itemMatch = line.match(/^-\s+\[([ x-])\]\s+(.+)$/);
     if (itemMatch && currentSection === sectionTitle) {
       if (currentItemIndex === itemIndex) {
         // Remove this line

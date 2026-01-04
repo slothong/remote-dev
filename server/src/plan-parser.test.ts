@@ -121,6 +121,25 @@ describe('체크 상태를 파싱할 수 있다', () => {
     expect(result.sections[0].items[0].checked).toBe(true);
     expect(result.sections[0].items[1].checked).toBe(false);
   });
+
+  it('진행 중(-) 상태를 파싱한다', () => {
+    const planContent = `# Plan
+
+## Test Section
+- [x] Completed task
+- [-] In progress task
+- [ ] Pending task
+`;
+
+    const result = parsePlan(planContent);
+
+    expect(result.sections[0].items[0].checked).toBe(true);
+    expect(result.sections[0].items[0].inProgress).toBe(false);
+    expect(result.sections[0].items[1].checked).toBe(false);
+    expect(result.sections[0].items[1].inProgress).toBe(true);
+    expect(result.sections[0].items[2].checked).toBe(false);
+    expect(result.sections[0].items[2].inProgress).toBe(false);
+  });
 });
 
 describe('plan.md에 새 항목을 추가할 수 있다', () => {

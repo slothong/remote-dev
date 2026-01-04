@@ -4,6 +4,7 @@ import {getWebSocket} from '../services/websocket-manager';
 interface PlanItem {
   text: string;
   checked: boolean;
+  inProgress: boolean;
 }
 
 interface PlanSection {
@@ -133,7 +134,10 @@ export function Checklist({sessionId}: ChecklistProps) {
 
           return {
             ...section,
-            items: [...section.items, {text: itemText, checked: false}],
+            items: [
+              ...section.items,
+              {text: itemText, checked: false, inProgress: false},
+            ],
           };
         }),
       };
@@ -298,16 +302,18 @@ export function Checklist({sessionId}: ChecklistProps) {
                   </span>
                   <div className="flex items-center gap-1 sm:gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0">
                     <button
-                      className={`go-button p-1.5 sm:p-2 text-xs font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-md sm:rounded-lg shadow-sm hover:shadow transition-all ${loadingItems.has(`${sectionIndex}-${itemIndex}`) ? 'loading opacity-50 cursor-not-allowed' : ''}`}
+                      className={`go-button p-1.5 sm:p-2 text-xs font-semibold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-md sm:rounded-lg shadow-sm hover:shadow transition-all ${loadingItems.has(`${sectionIndex}-${itemIndex}`) || item.inProgress ? 'loading opacity-50 cursor-not-allowed' : ''}`}
                       onClick={() =>
                         void handleGoClick(sectionIndex, itemIndex)
                       }
-                      disabled={loadingItems.has(
-                        `${sectionIndex}-${itemIndex}`,
-                      )}
+                      disabled={
+                        loadingItems.has(`${sectionIndex}-${itemIndex}`) ||
+                        item.inProgress
+                      }
                       title="Execute this task"
                     >
-                      {loadingItems.has(`${sectionIndex}-${itemIndex}`) ? (
+                      {loadingItems.has(`${sectionIndex}-${itemIndex}`) ||
+                      item.inProgress ? (
                         <svg
                           className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-spin"
                           fill="none"
