@@ -27,7 +27,11 @@ export class SSHWebSocketBridge {
     });
   }
 
-  async connect(sessionId: string): Promise<void> {
+  async connect(
+    sessionId: string,
+    cols?: number,
+    rows?: number,
+  ): Promise<void> {
     this.sessionId = sessionId;
     const session = this.sshManager.getSession(sessionId);
 
@@ -36,7 +40,7 @@ export class SSHWebSocketBridge {
     }
 
     // Start tmux session with claude command
-    const shellResult = await startTmuxSession(session.client);
+    const shellResult = await startTmuxSession(session.client, cols, rows);
 
     if (!shellResult.success || !shellResult.stream) {
       throw new Error(shellResult.error || 'Failed to start shell');

@@ -16,8 +16,12 @@ describe('SSH 셸 세션을 시작할 수 있다', () => {
       end: vi.fn(),
     };
 
-    vi.spyOn(mockClient, 'shell').mockImplementation(
-      (callback: (err: Error | undefined, stream: ClientChannel) => void) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.spyOn(mockClient, 'shell') as any).mockImplementation(
+      (
+        options: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        callback: (err: Error | undefined, stream: ClientChannel) => void,
+      ) => {
         callback(undefined, mockStream as unknown as ClientChannel);
         return mockClient;
       },
@@ -31,8 +35,12 @@ describe('SSH 셸 세션을 시작할 수 있다', () => {
   });
 
   it('셸 실패 시 에러를 반환한다', async () => {
-    vi.spyOn(mockClient, 'shell').mockImplementation(
-      (callback: (err: Error | undefined, stream: ClientChannel) => void) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.spyOn(mockClient, 'shell') as any).mockImplementation(
+      (
+        options: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        callback: (err: Error | undefined, stream: ClientChannel) => void,
+      ) => {
         callback(new Error('Shell failed'), null as unknown as ClientChannel);
         return mockClient;
       },
@@ -59,8 +67,12 @@ describe('tmux 세션을 시작한다', () => {
       end: vi.fn(),
     };
 
-    vi.spyOn(mockClient, 'shell').mockImplementation(
-      (callback: (err: Error | undefined, stream: ClientChannel) => void) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.spyOn(mockClient, 'shell') as any).mockImplementation(
+      (
+        options: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        callback: (err: Error | undefined, stream: ClientChannel) => void,
+      ) => {
         callback(undefined, mockStream as unknown as ClientChannel);
         return mockClient;
       },
@@ -88,8 +100,12 @@ describe('tmux 세션을 시작한다', () => {
       end: vi.fn(),
     };
 
-    vi.spyOn(mockClient, 'shell').mockImplementation(
-      (callback: (err: Error | undefined, stream: ClientChannel) => void) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.spyOn(mockClient, 'shell') as any).mockImplementation(
+      (
+        options: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        callback: (err: Error | undefined, stream: ClientChannel) => void,
+      ) => {
         callback(undefined, mockStream as unknown as ClientChannel);
         return mockClient;
       },
@@ -115,8 +131,12 @@ describe('tmux 세션을 시작한다', () => {
       end: vi.fn(),
     };
 
-    vi.spyOn(mockClient, 'shell').mockImplementation(
-      (callback: (err: Error | undefined, stream: ClientChannel) => void) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (vi.spyOn(mockClient, 'shell') as any).mockImplementation(
+      (
+        options: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+        callback: (err: Error | undefined, stream: ClientChannel) => void,
+      ) => {
         callback(undefined, mockStream as unknown as ClientChannel);
         return mockClient;
       },

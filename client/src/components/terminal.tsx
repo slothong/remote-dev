@@ -1,6 +1,7 @@
 import {useEffect, useRef} from 'react';
 import {Terminal as XTerm} from '@xterm/xterm';
 import {FitAddon} from '@xterm/addon-fit';
+import {Unicode11Addon} from '@xterm/addon-unicode11';
 import '@xterm/xterm/css/xterm.css';
 import {initWebSocket, closeWebSocket} from '../services/websocket-manager';
 
@@ -21,12 +22,24 @@ export function Terminal({sessionId}: TerminalProps) {
       cursorBlink: true,
       fontSize: 14,
       fontFamily: 'monospace',
+      allowTransparency: false,
+      convertEol: true,
+      rendererType: 'canvas',
+      allowProposedApi: true,
     });
 
     const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
+    const unicode11Addon = new Unicode11Addon();
 
     term.open(terminalRef.current);
+    term.loadAddon(fitAddon);
+    term.loadAddon(unicode11Addon);
+
+    // Enable Unicode 11 support if available
+    if (term.unicode) {
+      term.unicode.activeVersion = '11';
+    }
+
     fitAddon.fit();
 
     xtermRef.current = term;
@@ -40,11 +53,15 @@ export function Terminal({sessionId}: TerminalProps) {
       ws.onopen = () => {
         term.writeln('Connected to server');
 
-        // Start shell session
+        // Start shell session with terminal size
         fetch(`${import.meta.env.VITE_API_BASE_URL}/api/ssh/shell`, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({sessionId}),
+          body: JSON.stringify({
+            sessionId,
+            cols: term.cols,
+            rows: term.rows,
+          }),
         })
           .then(res => res.json())
           .then((data: {success: boolean; error?: string}) => {

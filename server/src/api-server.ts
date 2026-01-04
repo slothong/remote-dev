@@ -67,7 +67,7 @@ export function createAPIServer(
 
   app.post('/api/ssh/shell', async (req: Request, res: Response) => {
     try {
-      const {sessionId} = req.body;
+      const {sessionId, cols, rows} = req.body;
 
       if (!sessionId) {
         res.status(400).json({
@@ -85,7 +85,7 @@ export function createAPIServer(
         return;
       }
 
-      await sshWsBridge.connect(sessionId);
+      await sshWsBridge.connect(sessionId, cols, rows);
 
       res.json({
         success: true,
