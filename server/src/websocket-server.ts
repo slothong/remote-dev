@@ -1,39 +1,57 @@
 import {WebSocketServer, type WebSocket} from 'ws';
+import type {Server} from 'http';
 
 export class WebSocketBridge {
   private wss: WebSocketServer | null = null;
-  private port: number;
+  private port?: number;
   private connectionHandlers: Array<() => void> = [];
   private disconnectionHandlers: Array<() => void> = [];
   private messageHandlers: Array<(message: string) => void> = [];
 
-  constructor(port: number) {
+  constructor(port?: number) {
     this.port = port;
   }
 
-  async start(): Promise<void> {
+  async start(server?: Server): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.wss = new WebSocketServer({port: this.port});
-
-      this.wss.on('listening', () => {
+      // If server is provided, attach to existing HTTP server
+      // Otherwise create standalone WebSocket server on specified port
+      if (server) {
+        this.wss = new WebSocketServer({server});
+        // Server is already listening, resolve immediately after setup
+        this.setupConnectionHandlers();
         resolve();
-      });
+      } else if (this.port) {
+        this.wss = new WebSocketServer({port: this.port});
 
-      this.wss.on('error', err => {
-        reject(err);
-      });
-
-      this.wss.on('connection', (ws: WebSocket) => {
-        this.connectionHandlers.forEach(handler => handler());
-
-        ws.on('message', (data: Buffer) => {
-          const message = data.toString();
-          this.messageHandlers.forEach(handler => handler(message));
+        this.wss.on('listening', () => {
+          resolve();
         });
 
-        ws.on('close', () => {
-          this.disconnectionHandlers.forEach(handler => handler());
+        this.wss.on('error', err => {
+          reject(err);
         });
+
+        this.setupConnectionHandlers();
+      } else {
+        reject(new Error('Either port or server must be provided'));
+      }
+    });
+  }
+
+  private setupConnectionHandlers(): void {
+    if (!this.wss) return;
+
+    this.wss.on('connection', (ws: WebSocket) => {
+      this.connectionHandlers.forEach(handler => handler());
+
+      ws.on('message', (data: Buffer) => {
+        const message = data.toString();
+        this.messageHandlers.forEach(handler => handler(message));
+      });
+
+      ws.on('close', () => {
+        this.disconnectionHandlers.forEach(handler => handler());
       });
     });
   }
@@ -59,7 +77,7 @@ export class WebSocketBridge {
     });
   }
 
-  getPort(): number {
+  getPort(): number | undefined {
     return this.port;
   }
 

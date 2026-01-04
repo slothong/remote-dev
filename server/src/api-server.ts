@@ -18,7 +18,7 @@ import {
 const sshManager = new SSHSessionManager();
 let sshWsBridge: SSHWebSocketBridge | null = null;
 
-export function createAPIServer(
+export async function createAPIServer(
   port: number,
   wsServer: WebSocketBridge,
 ): Promise<Server> {
@@ -358,9 +358,15 @@ export function createAPIServer(
     });
   }
 
-  return new Promise(resolve => {
-    const server = app.listen(port, () => {
-      resolve(server);
+  return new Promise((resolve, reject) => {
+    const server = app.listen(port, async () => {
+      try {
+        // Attach WebSocket server to the HTTP server
+        await wsServer.start(server);
+        resolve(server);
+      } catch (error) {
+        reject(error);
+      }
     });
   });
 }

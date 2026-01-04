@@ -1,19 +1,19 @@
 import {createAPIServer} from './api-server';
 import {WebSocketBridge} from './websocket-server';
 
-const API_PORT = 3000;
-const WS_PORT = 3001;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 async function main() {
   console.log('Starting server...');
 
   try {
-    const wsServer = new WebSocketBridge(WS_PORT);
-    await wsServer.start();
-    console.log(`WebSocket server listening on ws://localhost:${WS_PORT}`);
+    // Create WebSocket server (will be attached to HTTP server)
+    const wsServer = new WebSocketBridge();
 
-    await createAPIServer(API_PORT, wsServer);
-    console.log(`API server listening on http://localhost:${API_PORT}`);
+    // Create HTTP server and attach WebSocket server to it
+    await createAPIServer(PORT, wsServer);
+    console.log(`Server listening on http://localhost:${PORT}`);
+    console.log(`WebSocket available on ws://localhost:${PORT}`);
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
