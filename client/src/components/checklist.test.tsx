@@ -390,3 +390,38 @@ describe('go 명령어를 전송한 후 enter를 같이 전송해서 명령어�
     });
   });
 });
+
+describe('체크박스는 사용자가 클릭해서 상태 변경할 수 없다', () => {
+  beforeEach(() => {
+    global.fetch = vi.fn();
+  });
+
+  it('체크박스가 disabled 되어있다', async () => {
+    const mockPlanData = {
+      success: true,
+      data: {
+        sections: [
+          {
+            title: 'Test Section',
+            items: [
+              {text: 'Task 1', checked: false},
+              {text: 'Task 2', checked: true},
+            ],
+          },
+        ],
+      },
+    };
+
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      json: async () => mockPlanData,
+    });
+
+    render(<Checklist sessionId="test-session" />);
+
+    await waitFor(() => {
+      const checkboxes = screen.getAllByRole('checkbox');
+      expect(checkboxes[0].disabled).toBe(true);
+      expect(checkboxes[1].disabled).toBe(true);
+    });
+  });
+});

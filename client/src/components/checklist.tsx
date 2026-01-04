@@ -339,14 +339,8 @@ export function Checklist({sessionId}: ChecklistProps) {
                   <input
                     type="checkbox"
                     checked={item.checked}
-                    onChange={() => {
-                      void handleCheckToggle(
-                        section.title,
-                        itemIndex,
-                        item.checked,
-                      );
-                    }}
-                    className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer mt-0.5"
+                    disabled
+                    className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-not-allowed mt-0.5"
                   />
                   <span
                     className={`flex-1 text-sm leading-relaxed ${item.checked ? 'checked line-through text-gray-400' : 'text-gray-700 font-medium'}`}
