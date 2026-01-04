@@ -1,6 +1,6 @@
 import type {SSHSessionManager} from './ssh-session';
 import type {WebSocketBridge} from './websocket-server';
-import {startShell} from './ssh-shell';
+import {startTmuxSession} from './ssh-shell';
 import type {ClientChannel} from 'ssh2';
 
 export class SSHWebSocketBridge {
@@ -35,8 +35,8 @@ export class SSHWebSocketBridge {
       throw new Error('Session not found');
     }
 
-    // Start shell session
-    const shellResult = await startShell(session.client);
+    // Start tmux session with claude command
+    const shellResult = await startTmuxSession(session.client);
 
     if (!shellResult.success || !shellResult.stream) {
       throw new Error(shellResult.error || 'Failed to start shell');
