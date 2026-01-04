@@ -50,7 +50,8 @@ export function Terminal({sessionId}: TerminalProps) {
       const wsUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:3001';
       const ws = initWebSocket(wsUrl);
 
-      ws.onopen = () => {
+      // Define event handlers
+      const handleOpen = () => {
         term.writeln('Connected to server');
 
         // Start shell session with terminal size
@@ -76,29 +77,51 @@ export function Terminal({sessionId}: TerminalProps) {
           });
       };
 
-      ws.onmessage = event => {
+      const handleMessage = (event: MessageEvent) => {
         term.write(event.data);
       };
 
-      ws.onerror = () => {
+      const handleError = () => {
         term.writeln('\r\nWebSocket error occurred');
       };
 
-      ws.onclose = () => {
+      const handleClose = () => {
         term.writeln('\r\nDisconnected from server');
       };
 
+      // Only attach handlers if WebSocket is connecting or just created
+      if (ws.readyState === WebSocket.CONNECTING) {
+        ws.addEventListener('open', handleOpen);
+      } else if (ws.readyState === WebSocket.OPEN) {
+        // Already open, trigger shell session start
+        handleOpen();
+      }
+
+      ws.addEventListener('message', handleMessage);
+      ws.addEventListener('error', handleError);
+      ws.addEventListener('close', handleClose);
+
       // Send terminal input to WebSocket
-      term.onData(data => {
+      const dataDisposable = term.onData(data => {
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(data);
         }
       });
+
+      // Cleanup
+      return () => {
+        ws.removeEventListener('open', handleOpen);
+        ws.removeEventListener('message', handleMessage);
+        ws.removeEventListener('error', handleError);
+        ws.removeEventListener('close', handleClose);
+        dataDisposable.dispose();
+        closeWebSocket();
+        term.dispose();
+      };
     }
 
-    // Cleanup
+    // Cleanup when no sessionId
     return () => {
-      closeWebSocket();
       term.dispose();
     };
   }, [sessionId]);
