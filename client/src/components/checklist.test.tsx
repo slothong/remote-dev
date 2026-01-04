@@ -8,7 +8,7 @@ describe('체크리스트 컴포넌트를 렌더링할 수 있다', () => {
     global.fetch = vi.fn();
   });
 
-  it('should render checklist container', async () => {
+  it('체크리스트 컨테이너를 렌더링한다', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -35,7 +35,7 @@ describe('체크리스트 컴포넌트를 렌더링할 수 있다', () => {
     });
   });
 
-  it('should show loading state initially', () => {
+  it('초기에 로딩 상태를 표시한다', () => {
     (global.fetch as ReturnType<typeof vi.fn>).mockImplementation(
       () =>
         new Promise(() => {
@@ -48,7 +48,7 @@ describe('체크리스트 컴포넌트를 렌더링할 수 있다', () => {
     expect(screen.getByText('Loading plan...')).toBeDefined();
   });
 
-  it('should show error state when fetch fails', async () => {
+  it('가져오기 실패 시 에러 상태를 표시한다', async () => {
     const mockError = {
       success: false,
       error: 'Failed to load plan',
@@ -71,7 +71,7 @@ describe('섹션별로 그룹화된 체크리스트를 표시한다', () => {
     global.fetch = vi.fn();
   });
 
-  it('should display sections with titles', async () => {
+  it('제목과 함께 섹션을 표시한다', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -106,7 +106,7 @@ describe('각 체크박스 항목을 표시한다', () => {
     global.fetch = vi.fn();
   });
 
-  it('should display checkbox items', async () => {
+  it('체크박스 항목을 표시한다', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -140,7 +140,7 @@ describe('체크박스 상태를 시각적으로 표시한다', () => {
     global.fetch = vi.fn();
   });
 
-  it('should show checked status', async () => {
+  it('체크된 상태를 표시한다', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -175,7 +175,7 @@ describe('각 항목에 go 버튼을 표시한다', () => {
     global.fetch = vi.fn();
   });
 
-  it('should display go buttons', async () => {
+  it('go 버튼을 표시한다', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -207,7 +207,7 @@ describe('각 항목에 삭제 버튼을 표시한다', () => {
     global.fetch = vi.fn();
   });
 
-  it('should display delete buttons', async () => {
+  it('삭제 버튼을 표시한다', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -239,7 +239,7 @@ describe('각 섹션에 항목 추가 폼을 표시한다', () => {
     global.fetch = vi.fn();
   });
 
-  it('should display add item form for each section', async () => {
+  it('각 섹션에 항목 추가 폼을 표시한다', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -271,7 +271,7 @@ describe('Go 버튼 클릭 시 올바른 형식의 명령어를 보낸다', () =
     global.fetch = vi.fn();
   });
 
-  it('should send /go command with section and item index (e.g., /go 1.2)', async () => {
+  it('섹션과 항목 인덱스로 /go 명령어를 전송한다 (예: /go 1.2)', async () => {
     const mockPlanData = {
       success: true,
       data: {
@@ -336,7 +336,7 @@ describe('go 명령어를 전송한 후 enter를 같이 전송해서 명령어�
     global.fetch = vi.fn();
   });
 
-  it('should send carriage return (\\r) after go command to execute it', async () => {
+  it('go 명령어 실행을 위해 캐리지 리턴 (\\r)을 전송한다', async () => {
     const mockPlanData = {
       success: true,
       data: {

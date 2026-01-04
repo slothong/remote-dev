@@ -12,13 +12,13 @@ describe('WebSocket 서버를 시작할 수 있다', () => {
     }
   });
 
-  it('should create a WebSocket server', () => {
+  it('WebSocket 서버를 생성한다', () => {
     server = new WebSocketBridge(3001);
 
     expect(server).toBeDefined();
   });
 
-  it('should start listening on specified port', async () => {
+  it('지정된 포트에서 수신을 시작한다', async () => {
     server = new WebSocketBridge(3002);
 
     await server.start();
@@ -26,7 +26,7 @@ describe('WebSocket 서버를 시작할 수 있다', () => {
     expect(server.isListening()).toBe(true);
   });
 
-  it('should close the server', async () => {
+  it('서버를 종료한다', async () => {
     server = new WebSocketBridge(3003);
 
     await server.start();
@@ -36,7 +36,7 @@ describe('WebSocket 서버를 시작할 수 있다', () => {
     expect(server.isListening()).toBe(false);
   });
 
-  it('should return port number', () => {
+  it('포트 번호를 반환한다', () => {
     server = new WebSocketBridge(3004);
 
     expect(server.getPort()).toBe(3004);
@@ -58,7 +58,7 @@ describe('WebSocket 클라이언트 연결을 수락할 수 있다', () => {
     }
   });
 
-  it('should accept client connection', async () => {
+  it('클라이언트 연결을 수락한다', async () => {
     server = new WebSocketBridge(3005);
     await server.start();
 
@@ -79,7 +79,7 @@ describe('WebSocket 클라이언트 연결을 수락할 수 있다', () => {
     });
   });
 
-  it('should track number of connected clients', async () => {
+  it('연결된 클라이언트 수를 추적한다', async () => {
     server = new WebSocketBridge(3006);
     await server.start();
 
@@ -101,7 +101,7 @@ describe('WebSocket 클라이언트 연결을 수락할 수 있다', () => {
     });
   });
 
-  it('should handle client disconnection', async () => {
+  it('클라이언트 연결 해제를 처리한다', async () => {
     server = new WebSocketBridge(3007);
     await server.start();
 
@@ -154,7 +154,7 @@ describe('WebSocket으로 메시지를 수신할 수 있다', () => {
     }
   });
 
-  it('should receive message from client', async () => {
+  it('클라이언트로부터 메시지를 수신한다', async () => {
     server = new WebSocketBridge(3008);
     await server.start();
 
@@ -180,7 +180,7 @@ describe('WebSocket으로 메시지를 수신할 수 있다', () => {
     });
   });
 
-  it('should receive JSON message from client', async () => {
+  it('클라이언트로부터 JSON 메시지를 수신한다', async () => {
     server = new WebSocketBridge(3009);
     await server.start();
 
@@ -208,7 +208,7 @@ describe('WebSocket으로 메시지를 수신할 수 있다', () => {
     });
   });
 
-  it('should handle multiple messages', async () => {
+  it('여러 메시지를 처리한다', async () => {
     server = new WebSocketBridge(3010);
     await server.start();
 
@@ -257,7 +257,7 @@ describe('WebSocket으로 메시지를 전송할 수 있다', () => {
     }
   });
 
-  it('should send message to client', async () => {
+  it('클라이언트에게 메시지를 전송한다', async () => {
     server = new WebSocketBridge(3011);
     await server.start();
 
@@ -283,7 +283,7 @@ describe('WebSocket으로 메시지를 전송할 수 있다', () => {
     });
   });
 
-  it('should broadcast message to all clients', async () => {
+  it('모든 클라이언트에게 메시지를 브로드캐스트한다', async () => {
     server = new WebSocketBridge(3012);
     await server.start();
 
@@ -340,7 +340,7 @@ describe('WebSocket으로 메시지를 전송할 수 있다', () => {
     });
   });
 
-  it('should send JSON message', async () => {
+  it('JSON 메시지를 전송한다', async () => {
     server = new WebSocketBridge(3013);
     await server.start();
 

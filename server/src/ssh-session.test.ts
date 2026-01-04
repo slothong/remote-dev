@@ -3,13 +3,13 @@ import {SSHSessionManager} from './ssh-session';
 import type {SSHConfig} from './ssh-config';
 
 describe('SSH 연결 성공 시 세션을 유지한다', () => {
-  it('should create a session manager', () => {
+  it('세션 매니저를 생성한다', () => {
     const manager = new SSHSessionManager();
 
     expect(manager).toBeDefined();
   });
 
-  it('should store session after successful connection', async () => {
+  it('성공적인 연결 후 세션을 저장한다', async () => {
     const manager = new SSHSessionManager();
     const config: SSHConfig = {
       host: 'invalid-host.example.com',
@@ -26,14 +26,14 @@ describe('SSH 연결 성공 시 세션을 유지한다', () => {
     }
   });
 
-  it('should return undefined for non-existent session', () => {
+  it('존재하지 않는 세션에 대해 undefined를 반환한다', () => {
     const manager = new SSHSessionManager();
     const session = manager.getSession('non-existent-id');
 
     expect(session).toBeUndefined();
   });
 
-  it('should disconnect and remove session', async () => {
+  it('세션을 연결 해제하고 제거한다', async () => {
     const manager = new SSHSessionManager();
     const config: SSHConfig = {
       host: 'invalid-host.example.com',
@@ -51,7 +51,7 @@ describe('SSH 연결 성공 시 세션을 유지한다', () => {
     }
   });
 
-  it('should return all active sessions', async () => {
+  it('모든 활성 세션을 반환한다', async () => {
     const manager = new SSHSessionManager();
 
     const sessions = manager.getAllSessions();
@@ -61,7 +61,7 @@ describe('SSH 연결 성공 시 세션을 유지한다', () => {
 });
 
 describe('SSH 연결을 종료할 수 있다', () => {
-  it('should disconnect without error for non-existent session', async () => {
+  it('존재하지 않는 세션에 대해 에러 없이 연결 해제한다', async () => {
     const manager = new SSHSessionManager();
 
     await expect(
@@ -69,7 +69,7 @@ describe('SSH 연결을 종료할 수 있다', () => {
     ).resolves.toBeUndefined();
   });
 
-  it('should remove session after disconnect', async () => {
+  it('연결 해제 후 세션을 제거한다', async () => {
     const manager = new SSHSessionManager();
     const config: SSHConfig = {
       host: 'invalid-host.example.com',
@@ -89,7 +89,7 @@ describe('SSH 연결을 종료할 수 있다', () => {
     }
   });
 
-  it('should disconnect all sessions', async () => {
+  it('모든 세션의 연결을 해제한다', async () => {
     const manager = new SSHSessionManager();
 
     await manager.disconnectAll();
@@ -98,7 +98,7 @@ describe('SSH 연결을 종료할 수 있다', () => {
     expect(sessions.length).toBe(0);
   });
 
-  it('should close client connection on disconnect', async () => {
+  it('연결 해제 시 클라이언트 연결을 닫는다', async () => {
     const manager = new SSHSessionManager();
     const config: SSHConfig = {
       host: 'invalid-host.example.com',

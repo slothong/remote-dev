@@ -3,7 +3,7 @@ import type {Client, SFTPWrapper} from 'ssh2';
 import {readPlanFile, parsePlan} from './plan-parser';
 
 describe('plan.md 파일을 읽을 수 있다', () => {
-  it('should read plan.md file from remote server', async () => {
+  it('원격 서버에서 plan.md 파일을 읽는다', async () => {
     const planContent = `# Plan
 
 ## Section 1
@@ -29,7 +29,7 @@ describe('plan.md 파일을 읽을 수 있다', () => {
     expect(result.content!.length).toBeGreaterThan(0);
   });
 
-  it('should contain plan content', async () => {
+  it('플랜 내용을 포함한다', async () => {
     const planContent = '# Plan\n\n## Test';
 
     const mockSftp = {
@@ -51,7 +51,7 @@ describe('plan.md 파일을 읽을 수 있다', () => {
 });
 
 describe('plan.md의 마크다운을 파싱할 수 있다', () => {
-  it('should parse plan.md and return sections', async () => {
+  it('plan.md를 파싱하고 섹션을 반환한다', async () => {
     const planContent = `# Plan
 
 ## SSH 연결 기능
@@ -71,7 +71,7 @@ describe('plan.md의 마크다운을 파싱할 수 있다', () => {
 });
 
 describe('섹션 제목을 추출할 수 있다', () => {
-  it('should extract section titles', () => {
+  it('섹션 제목을 추출한다', () => {
     const planContent = `# Plan
 
 ## SSH 연결 기능
@@ -89,7 +89,7 @@ describe('섹션 제목을 추출할 수 있다', () => {
 });
 
 describe('체크박스 항목을 추출할 수 있다', () => {
-  it('should extract checkbox items', () => {
+  it('체크박스 항목을 추출한다', () => {
     const planContent = `# Plan
 
 ## Test Section
@@ -108,7 +108,7 @@ describe('체크박스 항목을 추출할 수 있다', () => {
 });
 
 describe('체크 상태를 파싱할 수 있다', () => {
-  it('should parse checked status', () => {
+  it('체크 상태를 파싱한다', () => {
     const planContent = `# Plan
 
 ## Test Section
@@ -124,7 +124,7 @@ describe('체크 상태를 파싱할 수 있다', () => {
 });
 
 describe('plan.md에 새 항목을 추가할 수 있다', () => {
-  it('should add new item to a section', async () => {
+  it('섹션에 새 항목을 추가한다', async () => {
     const {addPlanItem} = await import('./plan-parser');
 
     const planContent = `# Plan
@@ -149,7 +149,7 @@ describe('plan.md에 새 항목을 추가할 수 있다', () => {
     expect(testSection).toContain('- [ ] New task');
   });
 
-  it('should add item at the end of last section', async () => {
+  it('마지막 섹션의 끝에 항목을 추가한다', async () => {
     const {addPlanItem} = await import('./plan-parser');
 
     const planContent = `# Plan
@@ -173,7 +173,7 @@ describe('plan.md에 새 항목을 추가할 수 있다', () => {
 });
 
 describe('plan.md에서 항목을 삭제할 수 있다', () => {
-  it('should delete an item from a section', async () => {
+  it('섹션에서 항목을 삭제한다', async () => {
     const {deletePlanItem} = await import('./plan-parser');
 
     const planContent = `# Plan
@@ -194,7 +194,7 @@ describe('plan.md에서 항목을 삭제할 수 있다', () => {
     expect(updated).not.toContain('- [x] Task 2');
   });
 
-  it('should delete the first item', async () => {
+  it('첫 번째 항목을 삭제한다', async () => {
     const {deletePlanItem} = await import('./plan-parser');
 
     const planContent = `# Plan
@@ -212,7 +212,7 @@ describe('plan.md에서 항목을 삭제할 수 있다', () => {
 });
 
 describe('plan.md의 체크 상태를 업데이트할 수 있다', () => {
-  it('should update check status of an item', async () => {
+  it('항목의 체크 상태를 업데이트한다', async () => {
     const {updateCheckStatus, writePlanFile} = await import('./plan-parser');
 
     const planContent = `# Plan
@@ -244,7 +244,7 @@ describe('plan.md의 체크 상태를 업데이트할 수 있다', () => {
     expect(writeResult.success).toBe(true);
   });
 
-  it('should uncheck an item', async () => {
+  it('항목의 체크를 해제한다', async () => {
     const {updateCheckStatus} = await import('./plan-parser');
 
     const planContent = `# Plan

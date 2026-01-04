@@ -3,7 +3,7 @@ import {connectToSSH} from './ssh-client';
 import type {SSHConfig} from './ssh-config';
 
 describe('SSH 클라이언트로 원격 서버에 연결할 수 있다', () => {
-  it('should return a connection result when connecting', async () => {
+  it('연결 시 연결 결과를 반환한다', async () => {
     const config: SSHConfig = {
       host: 'invalid-host-that-does-not-exist.example.com',
       port: 22,
@@ -17,7 +17,7 @@ describe('SSH 클라이언트로 원격 서버에 연결할 수 있다', () => {
     expect(result).toHaveProperty('success');
   });
 
-  it('should return success false for invalid host', async () => {
+  it('유효하지 않은 호스트에 대해 success false를 반환한다', async () => {
     const config: SSHConfig = {
       host: 'invalid-host-that-does-not-exist.example.com',
       port: 22,
@@ -31,7 +31,7 @@ describe('SSH 클라이언트로 원격 서버에 연결할 수 있다', () => {
     expect(result.error).toBeDefined();
   });
 
-  it('should validate config before connecting', async () => {
+  it('연결하기 전에 설정을 검증한다', async () => {
     const config: SSHConfig = {
       host: '',
       port: 22,
@@ -47,7 +47,7 @@ describe('SSH 클라이언트로 원격 서버에 연결할 수 있다', () => {
 });
 
 describe('SSH 연결 실패 시 에러를 반환한다', () => {
-  it('should return error message when connection fails', async () => {
+  it('연결이 실패할 때 에러 메시지를 반환한다', async () => {
     const config: SSHConfig = {
       host: 'invalid-host-that-does-not-exist.example.com',
       port: 22,
@@ -65,7 +65,7 @@ describe('SSH 연결 실패 시 에러를 반환한다', () => {
     }
   });
 
-  it('should not return client when connection fails', async () => {
+  it('연결이 실패할 때 클라이언트를 반환하지 않는다', async () => {
     const config: SSHConfig = {
       host: 'invalid-host-that-does-not-exist.example.com',
       port: 22,
@@ -79,7 +79,7 @@ describe('SSH 연결 실패 시 에러를 반환한다', () => {
     expect(result.client).toBeUndefined();
   });
 
-  it('should return specific error for invalid config', async () => {
+  it('유효하지 않은 설정에 대해 특정 에러를 반환한다', async () => {
     const config: SSHConfig = {
       host: 'localhost',
       port: 0,

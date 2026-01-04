@@ -24,7 +24,7 @@ describe('API Server SSH Connection', () => {
     }
   });
 
-  it('should accept SSH connection request', async () => {
+  it('SSH 연결 요청을 수락한다', async () => {
     const response = await fetch(`http://localhost:${port}/api/ssh/connect`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -42,7 +42,7 @@ describe('API Server SSH Connection', () => {
     expect(data).toHaveProperty('success');
   });
 
-  it('should return error for invalid SSH config', async () => {
+  it('유효하지 않은 SSH 설정에 대해 에러를 반환한다', async () => {
     const response = await fetch(`http://localhost:${port}/api/ssh/connect`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -80,7 +80,7 @@ describe('API Server Plan Management', () => {
     }
   });
 
-  it('should return error when sessionId is missing from GET /api/plan', async () => {
+  it('GET /api/plan에서 sessionId가 누락되었을 때 에러를 반환한다', async () => {
     const response = await fetch(`http://localhost:${port}/api/plan`);
 
     const data = (await response.json()) as {success: boolean; error?: string};
@@ -89,7 +89,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Session ID is required');
   });
 
-  it('should return error when session not found for GET /api/plan', async () => {
+  it('GET /api/plan에서 세션을 찾을 수 없을 때 에러를 반환한다', async () => {
     const response = await fetch(
       `http://localhost:${port}/api/plan?sessionId=invalid-session-id`,
     );
@@ -100,7 +100,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Session not found');
   });
 
-  it('should return error when sessionId is missing from POST /api/plan/update-check', async () => {
+  it('POST /api/plan/update-check에서 sessionId가 누락되었을 때 에러를 반환한다', async () => {
     const response = await fetch(
       `http://localhost:${port}/api/plan/update-check`,
       {
@@ -120,7 +120,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Session ID is required');
   });
 
-  it('should return error when required fields are missing from POST /api/plan/update-check', async () => {
+  it('POST /api/plan/update-check에서 필수 필드가 누락되었을 때 에러를 반환한다', async () => {
     const response = await fetch(
       `http://localhost:${port}/api/plan/update-check`,
       {
@@ -140,7 +140,7 @@ describe('API Server Plan Management', () => {
     );
   });
 
-  it('should return error when session not found for POST /api/plan/update-check', async () => {
+  it('POST /api/plan/update-check에서 세션을 찾을 수 없을 때 에러를 반환한다', async () => {
     const response = await fetch(
       `http://localhost:${port}/api/plan/update-check`,
       {
@@ -161,7 +161,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Session not found');
   });
 
-  it('should return error when sessionId is missing from POST /api/plan/add-item', async () => {
+  it('POST /api/plan/add-item에서 sessionId가 누락되었을 때 에러를 반환한다', async () => {
     const response = await fetch(`http://localhost:${port}/api/plan/add-item`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -177,7 +177,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Session ID is required');
   });
 
-  it('should return error when required fields are missing from POST /api/plan/add-item', async () => {
+  it('POST /api/plan/add-item에서 필수 필드가 누락되었을 때 에러를 반환한다', async () => {
     const response = await fetch(`http://localhost:${port}/api/plan/add-item`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -192,7 +192,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Section title and item text are required');
   });
 
-  it('should return error when session not found for POST /api/plan/add-item', async () => {
+  it('POST /api/plan/add-item에서 세션을 찾을 수 없을 때 에러를 반환한다', async () => {
     const response = await fetch(`http://localhost:${port}/api/plan/add-item`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -209,7 +209,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Session not found');
   });
 
-  it('should return error when sessionId is missing from DELETE /api/plan/delete-item', async () => {
+  it('DELETE /api/plan/delete-item에서 sessionId가 누락되었을 때 에러를 반환한다', async () => {
     const response = await fetch(
       `http://localhost:${port}/api/plan/delete-item`,
       {
@@ -228,7 +228,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Session ID is required');
   });
 
-  it('should return error when required fields are missing from DELETE /api/plan/delete-item', async () => {
+  it('DELETE /api/plan/delete-item에서 필수 필드가 누락되었을 때 에러를 반환한다', async () => {
     const response = await fetch(
       `http://localhost:${port}/api/plan/delete-item`,
       {
@@ -246,7 +246,7 @@ describe('API Server Plan Management', () => {
     expect(data.error).toBe('Section title and item index are required');
   });
 
-  it('should return error when session not found for DELETE /api/plan/delete-item', async () => {
+  it('DELETE /api/plan/delete-item에서 세션을 찾을 수 없을 때 에러를 반환한다', async () => {
     const response = await fetch(
       `http://localhost:${port}/api/plan/delete-item`,
       {

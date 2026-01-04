@@ -3,7 +3,7 @@ import type {Client, SFTPWrapper} from 'ssh2';
 import {readRemoteFile, writeRemoteFile} from './ssh-file-operations';
 
 describe('원격 파일을 읽을 수 있다', () => {
-  it('should read file content from remote server', async () => {
+  it('원격 서버에서 파일 내용을 읽는다', async () => {
     const mockSftp = {
       readFile: vi.fn((path, encoding, callback) => {
         callback(null, Buffer.from('test content'));
@@ -25,7 +25,7 @@ describe('원격 파일을 읽을 수 있다', () => {
     expect(result.content).toBe('test content');
   });
 
-  it('should handle SFTP connection error', async () => {
+  it('SFTP 연결 에러를 처리한다', async () => {
     const mockClient = {
       sftp: vi.fn(callback => {
         callback(new Error('SFTP connection failed'), null);
@@ -38,7 +38,7 @@ describe('원격 파일을 읽을 수 있다', () => {
     expect(result.error).toBe('SFTP connection failed');
   });
 
-  it('should handle file read error', async () => {
+  it('파일 읽기 에러를 처리한다', async () => {
     const mockSftp = {
       readFile: vi.fn((path, encoding, callback) => {
         callback(new Error('File not found'));
@@ -59,7 +59,7 @@ describe('원격 파일을 읽을 수 있다', () => {
 });
 
 describe('원격 파일을 쓸 수 있다', () => {
-  it('should write content to remote file', async () => {
+  it('원격 파일에 내용을 쓴다', async () => {
     const mockSftp = {
       writeFile: vi.fn((path, content, encoding, callback) => {
         callback(null);
@@ -81,7 +81,7 @@ describe('원격 파일을 쓸 수 있다', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should handle SFTP connection error', async () => {
+  it('SFTP 연결 에러를 처리한다', async () => {
     const mockClient = {
       sftp: vi.fn(callback => {
         callback(new Error('SFTP connection failed'), null);
@@ -94,7 +94,7 @@ describe('원격 파일을 쓸 수 있다', () => {
     expect(result.error).toBe('SFTP connection failed');
   });
 
-  it('should handle file write error', async () => {
+  it('파일 쓰기 에러를 처리한다', async () => {
     const mockSftp = {
       writeFile: vi.fn((path, content, encoding, callback) => {
         callback(new Error('Permission denied'));

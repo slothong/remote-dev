@@ -24,7 +24,7 @@ describe('WebSocket과 SSH 세션 간 데이터를 전달할 수 있다', () => 
     }
   });
 
-  it('should create a bridge between SSH and WebSocket', () => {
+  it('SSH와 WebSocket 간 브릿지를 생성한다', () => {
     sshManager = new SSHSessionManager();
     wsServer = new WebSocketBridge(3020);
     bridge = new SSHWebSocketBridge(sshManager, wsServer);
@@ -32,7 +32,7 @@ describe('WebSocket과 SSH 세션 간 데이터를 전달할 수 있다', () => 
     expect(bridge).toBeDefined();
   });
 
-  it('should create bridge instance', async () => {
+  it('브릿지 인스턴스를 생성한다', async () => {
     sshManager = new SSHSessionManager();
     wsServer = new WebSocketBridge(3021);
     bridge = new SSHWebSocketBridge(sshManager, wsServer);
@@ -43,7 +43,7 @@ describe('WebSocket과 SSH 세션 간 데이터를 전달할 수 있다', () => 
     // Actual connection test requires a real SSH session
   });
 
-  it('should disconnect bridge', async () => {
+  it('브릿지 연결을 해제한다', async () => {
     sshManager = new SSHSessionManager();
     wsServer = new WebSocketBridge(3022);
     bridge = new SSHWebSocketBridge(sshManager, wsServer);
@@ -83,7 +83,7 @@ describe('클라이언트 연결 해제를 처리할 수 있다', () => {
     }
   });
 
-  it('should handle client disconnection', async () => {
+  it('클라이언트 연결 해제를 처리한다', async () => {
     sshManager = new SSHSessionManager();
     wsServer = new WebSocketBridge(3023);
     bridge = new SSHWebSocketBridge(sshManager, wsServer);
@@ -118,7 +118,7 @@ describe('클라이언트 연결 해제를 처리할 수 있다', () => {
     });
   });
 
-  it('should clean up resources on disconnection', async () => {
+  it('연결 해제 시 리소스를 정리한다', async () => {
     sshManager = new SSHSessionManager();
     wsServer = new WebSocketBridge(3024);
     bridge = new SSHWebSocketBridge(sshManager, wsServer);
@@ -153,7 +153,7 @@ describe('클라이언트 연결 해제를 처리할 수 있다', () => {
 });
 
 describe('SSH 셸 I/O를 WebSocket으로 브릿징한다', () => {
-  it('should bridge SSH shell output to WebSocket', () => {
+  it('SSH 셸 출력을 WebSocket으로 브릿징한다', () => {
     const sshManager = new SSHSessionManager();
     const wsServer = new WebSocketBridge(3025);
     const bridge = new SSHWebSocketBridge(sshManager, wsServer);

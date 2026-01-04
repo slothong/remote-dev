@@ -2,7 +2,7 @@ import {describe, it, expect} from 'vitest';
 import {createSSHConfig} from './ssh-config';
 
 describe('SSH 연결 정보를 저장하는 모델을 생성할 수 있다', () => {
-  it('should create SSH config model with password', () => {
+  it('비밀번호로 SSH 설정 모델을 생성한다', () => {
     const config = createSSHConfig({
       host: 'example.com',
       port: 22,
@@ -16,7 +16,7 @@ describe('SSH 연결 정보를 저장하는 모델을 생성할 수 있다', () 
     expect(config.password).toBe('testpass');
   });
 
-  it('should create SSH config model with privateKey', () => {
+  it('개인키로 SSH 설정 모델을 생성한다', () => {
     const config = createSSHConfig({
       host: 'example.com',
       port: 22,

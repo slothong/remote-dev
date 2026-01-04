@@ -9,7 +9,7 @@ describe('SSH 셸 세션을 시작할 수 있다', () => {
     mockClient = new Client();
   });
 
-  it('should start a shell session', async () => {
+  it('셸 세션을 시작한다', async () => {
     const mockStream = {
       on: vi.fn(),
       write: vi.fn(),
@@ -30,7 +30,7 @@ describe('SSH 셸 세션을 시작할 수 있다', () => {
     expect(mockClient.shell).toHaveBeenCalled();
   });
 
-  it('should return error when shell fails', async () => {
+  it('셸 실패 시 에러를 반환한다', async () => {
     vi.spyOn(mockClient, 'shell').mockImplementation(
       (callback: (err: Error | undefined, stream: ClientChannel) => void) => {
         callback(new Error('Shell failed'), null as unknown as ClientChannel);
