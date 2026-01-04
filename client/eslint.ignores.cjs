@@ -1,1 +1,10 @@
-module.exports = ['build/']
+module.exports = [
+  'build/',
+  'dist/',
+  'node_modules/',
+  'coverage/',
+  '*.config.js',
+  '*.config.ts',
+  'vite.config.ts',
+  'vitest.config.ts',
+]
