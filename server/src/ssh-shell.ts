@@ -38,9 +38,9 @@ export async function startTmuxSession(client: Client): Promise<ShellResult> {
 
       // tmux 세션 존재 여부에 따라 분기
       // 세션이 있으면: attach만 수행
-      // 세션이 없으면: -c 옵션으로 remote-dev-workspace에서 새 세션 생성 및 claude 실행
+      // 세션이 없으면: -c 옵션으로 remote-dev-workspace에서 새 세션 생성 및 send-keys로 claude 실행
       const tmuxCommand =
-        'if tmux has-session -t remote-tdd-dev 2>/dev/null; then tmux attach-session -t remote-tdd-dev; else tmux new-session -s remote-tdd-dev -c ~/remote-dev-workspace claude; fi\n';
+        "if tmux has-session -t remote-tdd-dev 2>/dev/null; then tmux attach-session -t remote-tdd-dev; else tmux new-session -s remote-tdd-dev -c ~/remote-dev-workspace \\; send-keys 'claude' Enter; fi\n";
       stream.write(tmuxCommand);
 
       resolve({

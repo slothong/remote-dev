@@ -139,5 +139,8 @@ describe('tmux 세션을 시작한다', () => {
     // -c 옵션으로 작업 디렉토리 지정
     expect(allWrites).toContain('-c');
     expect(allWrites).toContain('remote-dev-workspace');
+    // send-keys로 claude 명령 전송
+    expect(allWrites).toContain('send-keys');
+    expect(allWrites).toContain('claude');
   });
 });
