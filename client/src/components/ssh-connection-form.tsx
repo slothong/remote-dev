@@ -53,13 +53,18 @@ export function SSHConnectionForm({
       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
           <h2 className="text-3xl font-bold text-white">SSH Connection</h2>
-          <p className="text-blue-100 mt-1">Connect to your remote development server</p>
+          <p className="text-blue-100 mt-1">
+            Connect to your remote development server
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-5">
           <div className="space-y-4">
             <div>
-              <label htmlFor="host" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="host"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Host Address
               </label>
               <input
@@ -73,7 +78,10 @@ export function SSHConnectionForm({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="port" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="port"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Port
                 </label>
                 <input
@@ -86,7 +94,10 @@ export function SSHConnectionForm({
               </div>
 
               <div>
-                <label htmlFor="username" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Username
                 </label>
                 <input
@@ -101,7 +112,9 @@ export function SSHConnectionForm({
           </div>
 
           <div className="bg-gray-50 rounded-lg p-5 space-y-3">
-            <legend className="text-sm font-semibold text-gray-700 mb-3">Authentication Method</legend>
+            <legend className="text-sm font-semibold text-gray-700 mb-3">
+              Authentication Method
+            </legend>
             <label className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="radio"
@@ -116,7 +129,9 @@ export function SSHConnectionForm({
                 <span className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">
                   Password Authentication
                 </span>
-                <p className="text-xs text-gray-500">Use username and password</p>
+                <p className="text-xs text-gray-500">
+                  Use username and password
+                </p>
               </div>
             </label>
 
@@ -141,7 +156,10 @@ export function SSHConnectionForm({
 
           {authMethod === 'password' && (
             <div className="animate-fadeIn">
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Password
               </label>
               <input
@@ -156,7 +174,10 @@ export function SSHConnectionForm({
 
           {authMethod === 'key' && (
             <div className="animate-fadeIn">
-              <label htmlFor="privateKeyFile" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label
+                htmlFor="privateKeyFile"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
                 Private Key File
               </label>
               <input
@@ -169,11 +190,22 @@ export function SSHConnectionForm({
           )}
 
           {error && (
-            <div role="alert" className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg animate-fadeIn">
+            <div
+              role="alert"
+              className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg animate-fadeIn"
+            >
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0">
-                  <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <p className="text-sm font-medium text-red-800">{error}</p>

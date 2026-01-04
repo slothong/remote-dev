@@ -3,7 +3,8 @@ import {connectToSSH} from './ssh-service';
 import {server} from '../mocks/server';
 import {http, HttpResponse} from 'msw';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 describe('SSH Service', () => {
   it('should connect to SSH successfully', async () => {
