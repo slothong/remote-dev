@@ -36,6 +36,9 @@ export async function startTmuxSession(client: Client): Promise<ShellResult> {
         return;
       }
 
+      // remote-dev-workspace로 이동
+      stream.write('cd remote-dev-workspace\n');
+
       // tmux 세션을 시작하거나 기존 세션에 attach
       const tmuxCommand =
         'tmux has-session -t remote-tdd-dev 2>/dev/null && tmux attach-session -t remote-tdd-dev || tmux new-session -s remote-tdd-dev\n';

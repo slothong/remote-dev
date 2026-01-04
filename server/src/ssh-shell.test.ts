@@ -80,4 +80,33 @@ describe('tmux 세션을 시작한다', () => {
     expect(allWrites).toContain('remote-tdd-dev');
     expect(allWrites).toContain('claude');
   });
+
+  it('remote-dev-workspace로 이동한 후 tmux 세션을 시작한다', async () => {
+    const mockStream = {
+      on: vi.fn(),
+      write: vi.fn(),
+      end: vi.fn(),
+    };
+
+    vi.spyOn(mockClient, 'shell').mockImplementation(
+      (callback: (err: Error | undefined, stream: ClientChannel) => void) => {
+        callback(undefined, mockStream as unknown as ClientChannel);
+        return mockClient;
+      },
+    );
+
+    const result = await startTmuxSession(mockClient);
+
+    expect(result.success).toBe(true);
+
+    // write 호출 순서 확인
+    const calls = mockStream.write.mock.calls;
+    expect(calls.length).toBeGreaterThanOrEqual(2);
+
+    // 첫 번째 명령: cd remote-dev-workspace
+    expect(calls[0][0]).toContain('cd remote-dev-workspace');
+
+    // 두 번째 명령: tmux 세션 시작
+    expect(calls[1][0]).toContain('tmux');
+  });
 });
