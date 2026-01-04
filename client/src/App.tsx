@@ -61,13 +61,13 @@ function App() {
           {/* Checklist - 모바일: 상단, 데스크톱: 좌측 사이드바 */}
           <div className="lg:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 overflow-y-auto shadow-sm max-h-[40vh] lg:max-h-none">
             <div className="p-4 sm:p-6">
-              <Checklist sessionId={sessionId || undefined} />
+              <Checklist sessionId={sessionId ?? undefined} />
             </div>
           </div>
 
           {/* Terminal - 모바일: 하단, 데스크톱: 우측 메인 */}
           <div className="flex-1 bg-gray-900 min-h-0">
-            <Terminal sessionId={sessionId || undefined} />
+            <Terminal sessionId={sessionId ?? undefined} />
           </div>
         </div>
       </div>
