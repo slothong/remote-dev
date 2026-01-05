@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#1F2937"/>
+
+  <!-- Terminal window -->
+  <rect x="8" y="12" width="48" height="40" rx="4" fill="#374151"/>
+
+  <!-- Terminal header dots -->
+  <circle cx="14" cy="18" r="2" fill="#EF4444"/>
+  <circle cx="20" cy="18" r="2" fill="#F59E0B"/>
+  <circle cx="26" cy="18" r="2" fill="#10B981"/>
+
+  <!-- Terminal prompt and cursor -->
+  <text x="14" y="32" font-family="monospace" font-size="10" fill="#10B981" font-weight="bold">$</text>
+  <rect x="20" y="26" width="8" height="10" fill="#10B981" opacity="0.7"/>
+
+  <!-- TDD checkmark -->
+  <path d="M 42 38 L 46 42 L 52 34" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
