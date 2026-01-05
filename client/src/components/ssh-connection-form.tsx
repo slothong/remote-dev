@@ -84,8 +84,8 @@ export function SSHConnectionForm({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
+    <div className="w-full md:max-w-md md:mx-auto">
+      <div className="bg-white md:rounded-xl md:shadow-xl overflow-hidden min-h-screen md:min-h-0">
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 sm:px-8 py-4 sm:py-6">
           <h2 className="text-2xl sm:text-3xl font-bold text-white">
             SSH Connection
