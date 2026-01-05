@@ -67,3 +67,19 @@ describe('모바일 터미널 키보드', () => {
     expect(screen.getByLabelText('Enter')).toBeInTheDocument();
   });
 });
+
+describe('터미널 헤더', () => {
+  it('터미널 헤더에 md:flex 클래스가 있다', () => {
+    render(<Terminal sessionId="test-session" />);
+
+    const header = screen.getByTestId('terminal-header');
+    expect(header).toHaveClass('md:flex');
+  });
+
+  it('터미널 헤더에 hidden 클래스가 있다', () => {
+    render(<Terminal sessionId="test-session" />);
+
+    const header = screen.getByTestId('terminal-header');
+    expect(header).toHaveClass('hidden');
+  });
+});
